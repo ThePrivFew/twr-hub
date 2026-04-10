@@ -4,289 +4,76 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#141210">
-<title>TWR — Hub</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"
-      onerror="this.remove()">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#FFFFFF">
+<title>The Wattle Road — Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" onerror="this.remove()">
 <style>
-  :root {
-    --ink:     #141210;
-    --paper:   #1c1916;
-    --card:    #231f1b;
-    --border:  #2d2822;
-    --warm:    #e8d5b0;
-    --muted:   #7a6e62;
-    --dim:     #46403a;
-    --amber:   #c8894a;
-    --green:   #4a7c59;
-    --blue:    #3d6a8a;
-    --red:     #a84b3a;
-    --serif:   'DM Serif Display', Georgia, serif;
-    --mono:    'DM Mono', 'Courier New', monospace;
-  }
+:root{--white:#FFFFFF;--off-white:#FAF9F7;--light:#F4F1EC;--rule:#E5E0D8;--forge:#C4530A;--forge-deep:#9A3D06;--forge-pale:#FEF5EF;--sand:#C9B99A;--timber:#8B6F47;--bark:#5C4A32;--charcoal:#2B2520;--ink:#1A1410;--serif:'Cormorant Garamond',Georgia,serif;--sans:'DM Sans',-apple-system,'Helvetica Neue',sans-serif;--mono:'Courier New',monospace}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{height:100%}
+body{font-family:var(--sans);font-size:13px;background:var(--white);color:var(--ink);min-height:100dvh;-webkit-font-smoothing:antialiased;overscroll-behavior:none}
+.shell{max-width:480px;margin:0 auto;padding:0 0 calc(32px + env(safe-area-inset-bottom))}
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* HEADER */
+.top{padding:36px 20px 20px;border-bottom:1px solid var(--rule);margin-bottom:4px}
+.mark-the{font-family:var(--sans);font-size:9px;font-weight:500;letter-spacing:.24em;text-transform:uppercase;color:var(--forge);line-height:1;margin-bottom:4px}
+.mark-name{font-family:var(--serif);font-size:26px;font-weight:400;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);line-height:1;margin-bottom:10px}
+.mark-rule{height:.5px;background:var(--rule);margin-bottom:10px}
+.meta-row{display:flex;justify-content:space-between;align-items:center}
+.meta-date{font-size:10px;color:var(--sand);letter-spacing:.06em}
+.live-pill{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--sand)}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--forge);animation:blink 2.5s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-  html { height: 100%; }
+/* SECTION LABELS */
+.label{font-family:var(--sans);font-size:9px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--forge);padding:0 20px;margin:22px 0 8px;display:flex;align-items:center;gap:10px}
+.label::after{content:'';flex:1;height:.5px;background:var(--rule)}
 
-  body {
-    font-family: var(--mono);
-    font-size: 13px;
-    background: var(--ink);
-    color: var(--warm);
-    min-height: 100dvh;
-    -webkit-font-smoothing: antialiased;
-    overscroll-behavior: none;
-  }
+/* CARDS */
+.deck{padding:0 12px;display:flex;flex-direction:column;gap:6px}
+.card{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--white);border:1px solid var(--rule);border-radius:10px;text-decoration:none;color:inherit;position:relative;overflow:hidden;min-height:64px;transition:border-color .15s,background .15s;-webkit-tap-highlight-color:transparent;cursor:pointer}
+.card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2.5px;background:var(--c,var(--rule));border-radius:10px 0 0 10px}
+.card:hover{background:var(--off-white);border-color:var(--c,var(--rule))}
+.card:active{background:var(--light)}
+.card-ico{width:34px;height:34px;border-radius:7px;background:var(--ico-bg,var(--light));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.card-ico svg{width:16px;height:16px}
+.card-body{flex:1;min-width:0}
+.card-name{font-family:var(--serif);font-size:16px;font-weight:400;color:var(--ink);line-height:1.2;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-desc{font-size:10px;color:var(--sand);letter-spacing:.03em;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{font-family:var(--mono);font-size:8px;letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;border-radius:3px;flex-shrink:0;border:1px solid transparent}
+.b-live{background:var(--forge-pale);color:var(--forge);border-color:rgba(196,83,10,.2)}
+.b-doc{background:var(--light);color:var(--bark);border-color:var(--rule)}
+.b-edge{background:#EBF3FA;color:#3A6A8A;border-color:#BFCFD9}
+.b-dim{background:var(--light);color:var(--sand);border-color:var(--rule)}
 
-  /* grain */
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    opacity: 0.03;
-    pointer-events: none;
-    z-index: 9999;
-  }
+/* colour variants */
+.forge{--c:var(--forge);--ico-bg:var(--forge-pale)}
+.bark{--c:var(--bark);--ico-bg:var(--light)}
+.sand{--c:var(--sand);--ico-bg:var(--light)}
+.blue{--c:#3A6A8A;--ico-bg:#EBF3FA}
 
-  .shell {
-    max-width: 460px;
-    margin: 0 auto;
-    padding: 0 0 calc(24px + env(safe-area-inset-bottom));
-  }
+/* PROXY BAR */
+.proxy-bar{margin:6px 12px 0;padding:11px 14px;background:var(--off-white);border:1px solid var(--rule);border-radius:8px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.proxy-label{font-size:10px;color:var(--bark);font-weight:500}
+.proxy-url{font-family:var(--mono);font-size:9px;color:var(--sand);margin-top:2px}
+#proxy-status{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:3px;border:1px solid transparent;white-space:nowrap;letter-spacing:.06em}
+.ps-checking{background:var(--light);color:var(--sand);border-color:var(--rule)}
+.ps-ok{background:var(--forge-pale);color:var(--forge);border-color:rgba(196,83,10,.2)}
+.ps-err{background:#FCEBEB;color:#8B2A2A;border-color:#F09595}
 
-  /* ── HEADER ── */
-  .top {
-    padding: 32px 20px 0;
-    margin-bottom: 20px;
-  }
-  .brand {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-  .brand-name {
-    font-family: var(--serif);
-    font-size: 26px;
-    color: var(--warm);
-    letter-spacing: -0.01em;
-    line-height: 1;
-  }
-  .brand-tag {
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-  }
-  .rule {
-    height: 1px;
-    background: linear-gradient(to right, var(--amber), var(--border));
-    margin-bottom: 14px;
-  }
-  .meta-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .meta-date { font-size: 10px; color: var(--muted); letter-spacing: 0.06em; }
-  .live-pill {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 10px;
-    color: var(--muted);
-  }
-  .live-dot {
-    width: 5px; height: 5px;
-    border-radius: 50%;
-    background: var(--green);
-    animation: blink 2.5s ease-in-out infinite;
-  }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+/* SETUP NOTE */
+.setup-note{margin:20px 12px 0;padding:14px 16px;background:var(--forge-pale);border:1px solid rgba(196,83,10,.15);border-left:2.5px solid var(--forge);border-radius:8px}
+.setup-title{font-size:9px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--forge);margin-bottom:8px}
+.setup-step{display:flex;gap:10px;margin-bottom:6px;font-size:11px;color:var(--bark);line-height:1.6}
+.setup-step:last-child{margin-bottom:0}
+.setup-n{font-family:var(--mono);font-size:9px;background:var(--forge);color:white;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.setup-step code{font-family:var(--mono);font-size:10px;background:rgba(196,83,10,.1);color:var(--forge);padding:1px 5px;border-radius:3px}
 
-  /* ── SECTION LABEL ── */
-  .label {
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--dim);
-    padding: 0 20px;
-    margin-bottom: 6px;
-    margin-top: 18px;
-  }
-
-  /* ── CARD ── */
-  .deck {
-    padding: 0 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-  }
-
-  .card {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 14px 16px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    text-decoration: none;
-    color: inherit;
-    position: relative;
-    overflow: hidden;
-    min-height: 68px;
-    transition: border-color 0.15s, transform 0.1s;
-    -webkit-tap-highlight-color: transparent;
-    cursor: pointer;
-  }
-  .card::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 3px;
-    background: var(--c, var(--dim));
-    border-radius: 10px 0 0 10px;
-  }
-  .card:active { transform: scale(0.983); }
-
-  .card-ico {
-    width: 36px; height: 36px;
-    border-radius: 8px;
-    background: var(--ico-bg, rgba(74,67,60,0.3));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-  .card-ico svg { width: 17px; height: 17px; }
-
-  .card-body { flex: 1; min-width: 0; }
-  .card-name {
-    font-family: var(--serif);
-    font-size: 16px;
-    color: var(--warm);
-    line-height: 1.2;
-    margin-bottom: 2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .card-desc {
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 0.03em;
-    line-height: 1.5;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .badge {
-    font-size: 9px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 3px 7px;
-    border-radius: 4px;
-    flex-shrink: 0;
-  }
-  .b-live   { background: rgba(74,124,89,0.15);   color: #6ab882; border: 1px solid rgba(74,124,89,0.3); }
-  .b-build  { background: rgba(200,137,74,0.12);  color: #c8894a; border: 1px solid rgba(200,137,74,0.28); }
-  .b-edge   { background: rgba(61,106,138,0.14);  color: #6ba4c4; border: 1px solid rgba(61,106,138,0.28); }
-  .b-tool   { background: rgba(70,64,58,0.4);     color: var(--muted); border: 1px solid var(--border); }
-
-  /* colour variants */
-  .amber { --c: var(--amber); --ico-bg: rgba(200,137,74,0.1); }
-  .green { --c: var(--green); --ico-bg: rgba(74,124,89,0.1); }
-  .blue  { --c: var(--blue);  --ico-bg: rgba(61,106,138,0.1); }
-  .red   { --c: var(--red);   --ico-bg: rgba(168,75,58,0.1); }
-  .sage  { --c: #5a7a6a;      --ico-bg: rgba(74,100,84,0.1); }
-
-  /* ── PROXY STATUS ── */
-  .proxy-bar {
-    margin: 6px 12px 0;
-    padding: 10px 14px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-  }
-  .proxy-label { font-size: 10px; color: var(--muted); letter-spacing: 0.06em; }
-  .proxy-url   { font-size: 9px; color: var(--dim); font-family: var(--mono); }
-  #proxy-status {
-    font-size: 9px;
-    padding: 2px 7px;
-    border-radius: 4px;
-    border: 1px solid transparent;
-    white-space: nowrap;
-    letter-spacing: 0.06em;
-  }
-  .ps-checking { background: rgba(74,67,60,0.4);   color: var(--muted);  border-color: var(--border); }
-  .ps-ok       { background: rgba(74,124,89,0.15);  color: #6ab882;       border-color: rgba(74,124,89,0.3); }
-  .ps-err      { background: rgba(168,75,58,0.15);  color: #d47a6a;       border-color: rgba(168,75,58,0.3); }
-
-  /* ── STEP BOX ── */
-  .step-box {
-    margin: 14px 12px 0;
-    padding: 14px 16px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    border-left: 3px solid var(--amber);
-  }
-  .step-title {
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: var(--amber);
-    margin-bottom: 10px;
-  }
-  .step {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    margin-bottom: 8px;
-    font-size: 11px;
-    color: var(--muted);
-    line-height: 1.6;
-  }
-  .step:last-child { margin-bottom: 0; }
-  .step-n {
-    font-size: 9px;
-    background: var(--dim);
-    color: var(--warm);
-    width: 16px; height: 16px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-  .step code {
-    font-family: var(--mono);
-    font-size: 10px;
-    background: var(--ink);
-    color: var(--amber);
-    padding: 1px 5px;
-    border-radius: 3px;
-  }
-
-  /* ── FOOTER ── */
-  footer {
-    margin-top: 28px;
-    padding: 16px 20px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .foot-id      { font-size: 9px; color: var(--dim); letter-spacing: 0.1em; text-transform: uppercase; }
-  .foot-version { font-size: 9px; color: var(--dim); }
+/* FOOTER */
+footer{margin-top:32px;padding:16px 20px;border-top:1px solid var(--rule);display:flex;justify-content:space-between;align-items:center}
+.foot-l{font-family:var(--serif);font-size:12px;color:var(--bark);letter-spacing:.06em}
+.foot-r{font-family:var(--mono);font-size:9px;color:var(--sand)}
 </style>
 </head>
 <body>
@@ -294,40 +81,22 @@
 
   <!-- HEADER -->
   <div class="top">
-    <div class="brand">
-      <span class="brand-name">The Wattle Road</span>
-      <span class="brand-tag">Hub</span>
-    </div>
-    <div class="rule"></div>
+    <div class="mark-the">The</div>
+    <div class="mark-name">Wattle Road</div>
+    <div class="mark-rule"></div>
     <div class="meta-row">
       <span class="meta-date" id="js-date"></span>
-      <span class="live-pill"><span class="live-dot"></span>All systems</span>
+      <span class="live-pill"><span class="live-dot"></span>Hub</span>
     </div>
   </div>
 
-  <!-- CORE SYSTEMS -->
-  <div class="label">Core operating system</div>
+  <!-- CLIENT-FACING -->
+  <div class="label">Client-facing</div>
   <div class="deck">
 
-    <a class="card amber" href="https://theprivfew.github.io/twr-material-library/" target="_blank" rel="noopener">
+    <a class="card forge" href="https://theprivfew.github.io/twr-proposal-builder/" target="_blank" rel="noopener">
       <div class="card-ico">
-        <svg fill="none" stroke="#c8894a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-          <rect x="3" y="3" width="7" height="9" rx="1.5"/>
-          <rect x="14" y="3" width="7" height="5" rx="1.5"/>
-          <rect x="14" y="12" width="7" height="9" rx="1.5"/>
-          <rect x="3" y="16" width="7" height="5" rx="1.5"/>
-        </svg>
-      </div>
-      <div class="card-body">
-        <div class="card-name">Material Library</div>
-        <div class="card-desc">Stock · Contacts · Pipeline · Admin</div>
-      </div>
-      <span class="badge b-live">Live</span>
-    </a>
-
-    <a class="card green" href="https://theprivfew.github.io/twr-proposal-builder/" target="_blank" rel="noopener">
-      <div class="card-ico">
-        <svg fill="none" stroke="#6ab882" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        <svg fill="none" stroke="#C4530A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
           <polyline points="14 2 14 8 20 8"/>
           <line x1="9" y1="13" x2="15" y2="13"/>
@@ -341,43 +110,60 @@
       <span class="badge b-live">Live</span>
     </a>
 
-    <a class="card blue" href="https://theprivfew.github.io/twr-platform/" target="_blank" rel="noopener">
+    <a class="card forge" href="https://theprivfew.github.io/twr-platform/" target="_blank" rel="noopener">
       <div class="card-ico">
-        <svg fill="none" stroke="#6ba4c4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        <svg fill="none" stroke="#C4530A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
           <polyline points="9 22 9 12 15 12 15 22"/>
         </svg>
       </div>
       <div class="card-body">
         <div class="card-name">Platform</div>
-        <div class="card-desc">Admin + client portal · projects · briefs</div>
+        <div class="card-desc">Client portal · projects · briefs · signoffs</div>
+      </div>
+      <span class="badge b-live">Live</span>
+    </a>
+
+    <a class="card forge" href="https://theprivfew.github.io/twr-provenance/" target="_blank" rel="noopener">
+      <div class="card-ico">
+        <svg fill="none" stroke="#C4530A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <div class="card-body">
+        <div class="card-name">Provenance Engine</div>
+        <div class="card-desc">AI timber story · species · property history</div>
       </div>
       <span class="badge b-live">Live</span>
     </a>
 
   </div>
 
-  <!-- INTELLIGENCE -->
-  <div class="label">Intelligence</div>
+  <!-- INTERNAL SYSTEMS -->
+  <div class="label">Internal systems</div>
   <div class="deck">
 
-    <a class="card sage" href="https://theprivfew.github.io/twr-provenance/" target="_blank" rel="noopener">
+    <a class="card bark" href="https://theprivfew.github.io/twr-material-library/" target="_blank" rel="noopener">
       <div class="card-ico">
-        <svg fill="none" stroke="#7aaa8a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <svg fill="none" stroke="#5C4A32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <rect x="3" y="3" width="7" height="9" rx="1.5"/>
+          <rect x="14" y="3" width="7" height="5" rx="1.5"/>
+          <rect x="14" y="12" width="7" height="9" rx="1.5"/>
+          <rect x="3" y="16" width="7" height="5" rx="1.5"/>
         </svg>
       </div>
       <div class="card-body">
-        <div class="card-name">Provenance Engine</div>
-        <div class="card-desc">AI-generated timber story · species · property history</div>
+        <div class="card-name">Material Library</div>
+        <div class="card-desc">Stock · contacts · pipeline · admin</div>
       </div>
       <span class="badge b-live">Live</span>
     </a>
 
-    <a class="card red" href="https://theprivfew.github.io/twr-material-pipeline/" target="_blank" rel="noopener">
+    <a class="card bark" href="https://theprivfew.github.io/twr-material-pipeline/" target="_blank" rel="noopener">
       <div class="card-ico">
-        <svg fill="none" stroke="#d47a6a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        <svg fill="none" stroke="#5C4A32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
       </div>
       <div class="card-body">
@@ -385,6 +171,20 @@
         <div class="card-desc">NSW DA feed · demolition alerts · timber yield</div>
       </div>
       <span class="badge b-live">Live</span>
+    </a>
+
+    <a class="card sand" href="https://theprivfew.github.io/twr-stack-journal/" target="_blank" rel="noopener">
+      <div class="card-ico">
+        <svg fill="none" stroke="#C9B99A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+        </svg>
+      </div>
+      <div class="card-body">
+        <div class="card-name">Stack Journal</div>
+        <div class="card-desc">Build decisions · dev log · services</div>
+      </div>
+      <span class="badge b-dim">Internal</span>
     </a>
 
   </div>
@@ -395,7 +195,7 @@
 
     <a class="card blue" href="https://twr-pipeline-proxy.thewattleroad.workers.dev/health" target="_blank" rel="noopener">
       <div class="card-ico">
-        <svg fill="none" stroke="#6ba4c4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        <svg fill="none" stroke="#3A6A8A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
           <polyline points="16 18 22 12 16 6"/>
           <polyline points="8 6 2 12 8 18"/>
         </svg>
@@ -404,93 +204,169 @@
         <div class="card-name">Cloudflare Proxy</div>
         <div class="card-desc">twr-pipeline-proxy.thewattleroad.workers.dev</div>
       </div>
-      <span id="proxy-status" class="ps-checking">Checking…</span>
+      <span id="proxy-status" class="ps-checking">—</span>
+    </a>
+
+    <a class="card blue" href="https://console.firebase.google.com/project/the-wattle-road" target="_blank" rel="noopener">
+      <div class="card-ico">
+        <svg fill="none" stroke="#3A6A8A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+      </div>
+      <div class="card-body">
+        <div class="card-name">Firebase Console</div>
+        <div class="card-desc">the-wattle-road · Auth + Firestore</div>
+      </div>
+      <span class="badge b-edge">Edge</span>
+    </a>
+
+    <a class="card blue" href="https://dash.cloudflare.com" target="_blank" rel="noopener">
+      <div class="card-ico">
+        <svg fill="none" stroke="#3A6A8A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>
+        </svg>
+      </div>
+      <div class="card-body">
+        <div class="card-name">Cloudflare Dashboard</div>
+        <div class="card-desc">Workers · Pages · Domains · Zero Trust</div>
+      </div>
+      <span class="badge b-edge">Edge</span>
+    </a>
+
+    <a class="card blue" href="https://github.com/theprivfew" target="_blank" rel="noopener">
+      <div class="card-ico">
+        <svg fill="none" stroke="#3A6A8A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+        </svg>
+      </div>
+      <div class="card-body">
+        <div class="card-name">GitHub — ThePrivFew</div>
+        <div class="card-desc">All repos · version control · Pages hosting</div>
+      </div>
+      <span class="badge b-edge">Edge</span>
     </a>
 
   </div>
 
-  <!-- PROXY STATUS BAR -->
+  <!-- PROXY HEALTH ROW -->
   <div class="proxy-bar">
     <div>
       <div class="proxy-label">Proxy endpoints</div>
       <div class="proxy-url">/health · /da · /da/bulk · /sheet</div>
     </div>
-    <a href="twr-proxy-deploy-guide.html" target="_blank" rel="noopener" style="font-size:10px;color:var(--muted);text-decoration:none;white-space:nowrap;">Deploy guide →</a>
+    <a href="https://theprivfew.github.io/twr-stack-journal/" target="_blank" rel="noopener" style="font-size:10px;color:var(--sand);text-decoration:none;white-space:nowrap;font-family:var(--sans)">Stack Journal →</a>
   </div>
 
-  <!-- TOOLS -->
-  <div class="label">Dev tools</div>
+  <!-- BRAND & STRATEGY -->
+  <div class="label">Brand &amp; strategy</div>
   <div class="deck">
 
-    <a class="card" href="https://theprivfew.github.io/twr-stack-journal/" target="_blank" rel="noopener">
+    <a class="card forge" href="TWR-Studio-Brand-Book.html" target="_blank" rel="noopener">
       <div class="card-ico">
-        <svg fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+        <svg fill="none" stroke="#C4530A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
         </svg>
       </div>
       <div class="card-body">
-        <div class="card-name">Stack Journal</div>
-        <div class="card-desc">Build decisions · dev log · session notes</div>
+        <div class="card-name">Studio Brand Book</div>
+        <div class="card-desc">Colour · typography · logo · voice · UI standards</div>
       </div>
-      <span class="badge b-tool">Tool</span>
+      <span class="badge b-doc">Doc</span>
+    </a>
+
+    <a class="card forge" href="TWR-Brand-Playbook-v2.html" target="_blank" rel="noopener">
+      <div class="card-ico">
+        <svg fill="none" stroke="#C4530A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <div class="card-body">
+        <div class="card-name">Brand Playbook v2</div>
+        <div class="card-desc">Foundation · manifesto · colour · logo · voice</div>
+      </div>
+      <span class="badge b-doc">Doc</span>
+    </a>
+
+    <a class="card bark" href="TWR-Site-Architecture.html" target="_blank" rel="noopener">
+      <div class="card-ico">
+        <svg fill="none" stroke="#5C4A32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <path d="M3 9h18M9 21V9"/>
+        </svg>
+      </div>
+      <div class="card-body">
+        <div class="card-name">Site Architecture</div>
+        <div class="card-desc">Ecosystem strategy · audience flows · page structure</div>
+      </div>
+      <span class="badge b-doc">Doc</span>
+    </a>
+
+    <a class="card bark" href="TWR-Systems-Brief.html" target="_blank" rel="noopener">
+      <div class="card-ico">
+        <svg fill="none" stroke="#5C4A32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <line x1="8" y1="6" x2="21" y2="6"/>
+          <line x1="8" y1="12" x2="21" y2="12"/>
+          <line x1="8" y1="18" x2="21" y2="18"/>
+          <line x1="3" y1="6" x2="3.01" y2="6"/>
+          <line x1="3" y1="12" x2="3.01" y2="12"/>
+          <line x1="3" y1="18" x2="3.01" y2="18"/>
+        </svg>
+      </div>
+      <div class="card-body">
+        <div class="card-name">Systems Design Brief</div>
+        <div class="card-desc">Visual alignment spec · system inventory · priorities</div>
+      </div>
+      <span class="badge b-doc">Doc</span>
     </a>
 
   </div>
 
-  <!-- SETUP STEPS -->
-  <div class="step-box">
-    <div class="step-title">One-time setup — get all links working</div>
-    <div class="step">
-      <span class="step-n">1</span>
-      <span>Save this file (<code>twr-hub.html</code>) and <strong>all</strong> the other TWR files into the <strong>same folder</strong> on your Mac or iCloud Drive.</span>
+  <!-- SETUP NOTE -->
+  <div class="setup-note">
+    <div class="setup-title">Document links — same-folder rule</div>
+    <div class="setup-step">
+      <span class="setup-n">1</span>
+      <span>Brand and strategy document links are <strong>relative</strong>. All HTML files must live in the same folder for them to open.</span>
     </div>
-    <div class="step">
-      <span class="step-n">2</span>
-      <span>Open <code>twr-hub.html</code> in Safari. Every card above will now open the matching file directly.</span>
+    <div class="setup-step">
+      <span class="setup-n">2</span>
+      <span>To host documents publicly, upload each to its own GitHub repo under <code>theprivfew</code> and update the links above.</span>
     </div>
-    <div class="step">
-      <span class="step-n">3</span>
-      <span>On iPhone: open in Safari → Share → <strong>Add to Home Screen</strong>. Launches full-screen like a native app.</span>
-    </div>
-    <div class="step">
-      <span class="step-n">4</span>
-      <span>The proxy card pings <code>/health</code> automatically on load — green means the Cloudflare worker is up.</span>
+    <div class="setup-step">
+      <span class="setup-n">3</span>
+      <span>To update this hub, upload the new file to <code>theprivfew/twr-hub</code> as <code>index.html</code>.</span>
     </div>
   </div>
 
   <!-- FOOTER -->
   <footer>
-    <span class="foot-id">TWR · The Wattle Road</span>
-    <span class="foot-version">Hub v1.0 · <span id="js-year"></span></span>
+    <span class="foot-l">The Wattle Road</span>
+    <span class="foot-r">Hub v2.0 · Made With Care</span>
   </footer>
 
 </div>
-
 <script>
-  // Date
-  const d = new Date();
-  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  document.getElementById('js-date').textContent =
-    days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
-  document.getElementById('js-year').textContent = d.getFullYear();
+const d = new Date();
+const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+document.getElementById('js-date').textContent = days[d.getDay()] + ' ' + d.getDate() + ' ' + mo[d.getMonth()] + ' ' + d.getFullYear();
 
-  // Proxy health check
-  const ps = document.getElementById('proxy-status');
-  fetch('https://twr-pipeline-proxy.thewattleroad.workers.dev/health', { signal: AbortSignal.timeout(5000) })
-    .then(r => r.ok ? r.json() : Promise.reject(r.status))
-    .then(() => { ps.textContent = 'Online'; ps.className = 'ps-ok'; })
-    .catch(() => { ps.textContent = 'Offline'; ps.className = 'ps-err'; });
+const ps = document.getElementById('proxy-status');
+fetch('https://twr-pipeline-proxy.thewattleroad.workers.dev/health', { signal: AbortSignal.timeout(5000) })
+  .then(r => r.ok ? r.json() : Promise.reject())
+  .then(() => { ps.textContent = 'Online'; ps.className = 'ps-ok'; })
+  .catch(() => { ps.textContent = 'Offline'; ps.className = 'ps-err'; });
 
-  // Font fallback
-  document.fonts && document.fonts.ready.then(() => {
-    if (!document.fonts.check('16px "DM Serif Display"')) {
-      document.querySelectorAll('.brand-name, .card-name').forEach(el => {
-        el.style.fontFamily = 'Georgia, serif';
-      });
-    }
-  });
+document.fonts && document.fonts.ready.then(() => {
+  if (!document.fonts.check('16px "Cormorant Garamond"')) {
+    document.querySelectorAll('.mark-name, .card-name, .foot-l').forEach(el => {
+      el.style.fontFamily = 'Georgia, serif';
+    });
+  }
+});
 </script>
 </body>
 </html>

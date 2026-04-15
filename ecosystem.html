@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TWR Ecosystem</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #1A1410; display: flex; min-height: 100vh; font-family: Georgia, serif; overflow-x: hidden; }
+
+/* DIAGRAM SIDE */
+.diagram-side {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  transition: flex 0.4s ease;
+  min-width: 0;
+}
+.diagram-side.panel-open { flex: 0 0 55%; }
+
+.wrap { position: relative; width: 100%; max-width: 760px; }
+canvas { width: 100%; height: auto; display: block; }
+
+.node-hit {
+  position: absolute;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.2s;
+}
+.node-hit:hover { background: rgba(255,255,255,0.08); }
+.node-hit.active { background: rgba(196,83,10,0.18); }
+
+.centre-hit {
+  position: absolute;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 10;
+}
+.centre-hit:hover { background: rgba(196,83,10,0.15); }
+
+/* PANEL SIDE */
+.panel-side {
+  width: 0;
+  overflow: hidden;
+  transition: width 0.4s ease;
+  background: #1e1610;
+  border-left: 1px solid rgba(196,83,10,0.2);
+  flex-shrink: 0;
+}
+.panel-side.open { width: 420px; }
+
+.panel-inner {
+  width: 420px;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 32px 28px 60px;
+  position: sticky;
+  top: 0;
+}
+
+.panel-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: rgba(201,185,154,0.4);
+  font-size: 22px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+}
+.panel-close:hover { color: #C4530A; }
+
+.panel-status {
+  display: inline-block;
+  font-family: Arial, sans-serif;
+  font-size: 9px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-bottom: 14px;
+}
+.status-live { background: rgba(196,83,10,0.15); color: #C4530A; border: 1px solid rgba(196,83,10,0.3); }
+.status-motion { background: rgba(122,95,165,0.15); color: #a889cc; border: 1px solid rgba(122,95,165,0.25); }
+.status-concept { background: rgba(201,185,154,0.08); color: #C9B99A; border: 1px solid rgba(201,185,154,0.15); }
+.status-physical { background: rgba(74,133,90,0.1); color: #7ab88a; border: 1px solid rgba(74,133,90,0.2); }
+
+.panel-title {
+  font-family: Georgia, serif;
+  font-size: 26px;
+  font-weight: 300;
+  color: #FAF9F7;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+
+.panel-url {
+  font-family: Arial, sans-serif;
+  font-size: 10px;
+  letter-spacing: .06em;
+  color: rgba(196,83,10,0.7);
+  margin-bottom: 20px;
+}
+.panel-url a { color: rgba(196,83,10,0.9); text-decoration: none; }
+.panel-url a:hover { text-decoration: underline; }
+
+.panel-section-label {
+  font-family: Arial, sans-serif;
+  font-size: 9px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(201,185,154,0.4);
+  margin-bottom: 10px;
+  margin-top: 22px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.panel-section-label::after { content: ''; flex: 1; height: 1px; background: rgba(229,224,216,0.08); }
+
+.panel-body {
+  font-size: 13px;
+  line-height: 1.75;
+  color: rgba(201,185,154,0.75);
+}
+.panel-body p { margin-bottom: 10px; }
+.panel-body strong { color: #FAF9F7; font-weight: 400; }
+
+/* Next steps */
+.step-list { list-style: none; }
+.step-list li {
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  color: rgba(201,185,154,0.65);
+  line-height: 1.6;
+  padding: 7px 0 7px 18px;
+  border-bottom: 1px solid rgba(229,224,216,0.06);
+  position: relative;
+}
+.step-list li::before { content: '→'; position: absolute; left: 0; color: #C4530A; font-size: 11px; top: 8px; }
+
+/* Connected nodes */
+.connections { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 4px; }
+.conn-tag {
+  font-family: Arial, sans-serif;
+  font-size: 10px;
+  letter-spacing: .04em;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(229,224,216,0.12);
+  color: rgba(201,185,154,0.65);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.conn-tag:hover { border-color: rgba(196,83,10,0.4); color: #C4530A; }
+
+/* Open link button */
+.panel-link-btn {
+  display: block;
+  width: 100%;
+  margin-top: 24px;
+  background: rgba(196,83,10,0.12);
+  border: 1px solid rgba(196,83,10,0.3);
+  color: #C4530A;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 12px;
+  border-radius: 10px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.panel-link-btn:hover { background: rgba(196,83,10,0.22); }
+
+@media (max-width: 760px) {
+  body { flex-direction: column; }
+  .diagram-side.panel-open { flex: none; }
+  .panel-side { width: 100% !important; border-left: none; border-top: 1px solid rgba(196,83,10,0.2); }
+  .panel-side.open { width: 100% !important; }
+  .panel-inner { width: 100%; height: auto; position: static; }
+}
+</style>
+</head>
+<body>
+
+<div class="diagram-side" id="diagramSide">
+  <div class="wrap" id="wrap">
+    <canvas id="c"></canvas>
+
+    <!-- Node hit areas -->
+    <div class="node-hit" style="left:82.5%;top:50%;width:15.3%;padding-top:15.3%" data-node="0" id="hit-0"></div>
+    <div class="node-hit" style="left:74.9%;top:70.9%;width:15.3%;padding-top:15.3%" data-node="1" id="hit-1"></div>
+    <div class="node-hit" style="left:55.6%;top:82%;width:15.3%;padding-top:15.3%" data-node="2" id="hit-2"></div>
+    <div class="node-hit" style="left:33.8%;top:78.1%;width:15.3%;padding-top:15.3%" data-node="3" id="hit-3"></div>
+    <div class="node-hit" style="left:19.5%;top:61.1%;width:15.3%;padding-top:15.3%" data-node="4" id="hit-4"></div>
+    <div class="node-hit" style="left:19.5%;top:38.9%;width:15.3%;padding-top:15.3%" data-node="5" id="hit-5"></div>
+    <div class="node-hit" style="left:33.7%;top:21.9%;width:15.3%;padding-top:15.3%" data-node="6" id="hit-6"></div>
+    <div class="node-hit" style="left:55.6%;top:18%;width:15.3%;padding-top:15.3%" data-node="7" id="hit-7"></div>
+    <div class="node-hit" style="left:74.9%;top:29.1%;width:15.3%;padding-top:15.3%" data-node="8" id="hit-8"></div>
+    <div class="centre-hit" style="left:50%;top:50%;width:15.3%;padding-top:15.3%" data-node="hub" id="hit-hub"></div>
+  </div>
+</div>
+
+<!-- PANEL -->
+<div class="panel-side" id="panelSide">
+  <div class="panel-inner" id="panelInner">
+    <button class="panel-close" id="panelClose">×</button>
+    <div id="panelContent"></div>
+  </div>
+</div>
+
+<script>
+// ── NODE DATA ────────────────────────────────────────────────────────────────
+const NODES = [
+  {
+    id: 0,
+    label: 'Material Library',
+    status: 'live',
+    statusLabel: 'Live',
+    url: 'https://theprivfew.github.io/twr-material-library/',
+    summary: `<p>The central operating system for TWR. Everything that matters to the business day-to-day lives here — stock, clients, jobs, suppliers, makers, and the prospect pipeline.</p><p>A <strong>~3,600 line single-file HTML app</strong> running on GitHub Pages, syncing pipeline data from Google Sheets via Cloudflare proxy. Data lives in the browser's localStorage and is exported/imported as JSON.</p><p>The client model mirrors Dave's physical clipboard wall — one card per client, multiple jobs underneath. The business dashboard tracks revenue, win rate, pipeline value, and goals against actual.</p>`,
+    next: ['Drag-and-drop timeline (calendar week + 8-week rolling view) scoped and confirmed', 'Export/Import now built into Admin → Notes', 'Firebase multi-user sync planned for future phase'],
+    connects: ['Workshop', 'Provenance Engine', 'Material Pipeline', 'Maker & Designer Network', 'Footprint Commission'],
+    color: '#C4530A'
+  },
+  {
+    id: 1,
+    label: 'Workshop',
+    status: 'physical',
+    statusLabel: 'Physical',
+    url: null,
+    summary: `<p>The physical heart of the business. Where timber is milled, designed, and made into permanent objects. Everything in the digital stack exists to <strong>serve what happens in this room</strong>.</p><p>The workshop is the origin point for provenance records, the source of workshop notes on job sheets, and the place where stories are generated that feed the Story Lab and Podcast.</p><p>No dedicated digital environment — the workshop is represented across the Material Library (stock status, job notes), the Provenance Engine (step tracking), and the Stack Journal (daily notes).</p>`,
+    next: ['Workshop notes field live in every job card', 'Spec sheet prints direct from Material Library', 'Stack Journal captures daily build records'],
+    connects: ['Material Library', 'Provenance Engine', 'Story Lab', 'Stack Journal'],
+    color: '#C9B99A'
+  },
+  {
+    id: 2,
+    label: 'Story Lab',
+    status: 'motion',
+    statusLabel: 'In Development',
+    url: null,
+    summary: `<p>Every piece TWR makes carries a story that is worth more than the object itself. The Story Lab is where those stories are captured, refined, and published.</p><p>This connects directly to the <strong>Provenance Engine</strong> (the factual chain of custody), the <strong>Podcast</strong> (the long-form telling), and the <strong>Footprint Commission</strong> (the most powerful individual stories).</p><p>The TWR Gold Standard — the voice guide baked into the Material Library — is the seed of this. Calm, grounded, assured. Never salesy. Every story starts with the timber's origin, not the object's price.</p>`,
+    next: ['Story format to be developed — short provenance stories per piece', 'Footprint Commission will generate the first major stories', 'Connects to podcast as source material'],
+    connects: ['Provenance Engine', 'Podcast', 'Footprint Commission', 'Workshop', 'Venue Concept'],
+    color: '#7aadc8'
+  },
+  {
+    id: 3,
+    label: 'Provenance Engine',
+    status: 'live',
+    statusLabel: 'Live',
+    url: 'https://theprivfew.github.io/twr-provenance/',
+    summary: `<p>The FCD (Footprint, Continuation, and Distinction) chain of custody system. Every piece gets a verified record: <strong>where the timber came from → how it was salvaged → what it became → who it went to</strong>.</p><p>This is what separates TWR from every other furniture maker. The provenance record is the product. The piece is just the vessel.</p><p>Built into the Material Library's stock view — each entry has a provenance chain with editable steps and status tracking. Printable certificates in development.</p>`,
+    next: ['Provenance chain steps live inside Material Library stock view', 'Printable FCD certificate to be developed', 'Footprint Commission pieces will generate the richest provenance records'],
+    connects: ['Material Library', 'Workshop', 'Story Lab', 'Footprint Commission'],
+    color: '#7ab88a'
+  },
+  {
+    id: 4,
+    label: 'Material Pipeline',
+    status: 'live',
+    statusLabel: 'Live',
+    url: 'https://theprivfew.github.io/twr-pipeline/',
+    summary: `<p>The sourcing intelligence system. Tracks demolition leads, sites, suppliers, and pre-salvage opportunities across NSW and beyond.</p><p><strong>22+ suppliers mapped</strong> — demolition companies, timber yards, councils, and homeowners across Mid-North Coast, Sydney Metro, Hunter, South Coast, Canberra, and Regional NSW. Many are unclaimed and waiting for first contact.</p><p>Syncs with Google Sheets via Cloudflare proxy. The pipeline feeds the Material Library — timber found here becomes stock tracked there.</p>`,
+    next: ['22+ suppliers in system — priority: activate unclaimed relationships', 'Green Demolitions (Sydney) flagged as highest alignment with TWR philosophy', 'Southern Highlands identified as priority region — heritage homes, quality old-growth'],
+    connects: ['Material Library', 'Workshop', 'Footprint Commission'],
+    color: '#C4530A'
+  },
+  {
+    id: 5,
+    label: 'Footprint Commission',
+    status: 'motion',
+    statusLabel: 'Strategy in Motion',
+    url: null,
+    summary: `<p>The most powerful brand strategy in the ecosystem. A bespoke commission where TWR locates and salvages timber from a place of <strong>deep personal significance to a high-profile Australian</strong> — their childhood home, family farm, a demolished building from their formative years — and crafts it into something permanent.</p><p><strong>Current focus: Chris Hemsworth.</strong> Research complete. His father Craig ran the Bulman community store and post office in the NT in the 1980s. That building has since been replaced. The old store's fate — and its timber — is the research question. A one-degree introduction pathway exists via a mutual friend.</p><p>A research brief for 10 high-profile Australian candidates has been issued. The first commission will be offered at no charge in exchange for the willingness to share the story.</p>`,
+    next: ['Confirm what happened to the old Bulman store timber — contact NT connections', 'Brief issued to research team for 10 high-profile candidates', 'Build the story asset before making any approach — story first, pitch never', 'One-degree introduction to Hemsworth via ex-neighbour pathway ready when story is ready'],
+    connects: ['Story Lab', 'Provenance Engine', 'Material Pipeline', 'Podcast', 'Workshop'],
+    color: '#a889cc'
+  },
+  {
+    id: 6,
+    label: 'Podcast',
+    status: 'concept',
+    statusLabel: 'Not Yet Launched',
+    url: null,
+    summary: `<p>The long-form education channel. TWR's mission — shifting Australian demand from new-cut timber to reclaimed — needs voices beyond just Dave's. The podcast is how that education scales.</p><p>The thesis: <strong>Australia is still logging old growth forests</strong> when millions of tonnes of equivalent or superior hardwood already exists in structures being demolished. This is both an environmental and a design story. It deserves a platform.</p><p>Guest territory: retired craftsmen with irreplaceable knowledge, architects specifying reclaimed materials, demolition contractors, homeowners with extraordinary timber stories, and eventually — high-profile Australians touched by the Footprint Commission.</p>`,
+    next: ['Format and host to be determined', 'Story Lab content will provide the source material', 'Footprint Commission subjects are natural long-form guests', 'Retired craftsmen with generational knowledge — a key audience and guest pool'],
+    connects: ['Story Lab', 'Footprint Commission', 'Maker & Designer Network', 'Venue Concept'],
+    color: '#C9B99A'
+  },
+  {
+    id: 7,
+    label: 'Maker & Designer Network',
+    status: 'live',
+    statusLabel: 'Live',
+    url: 'https://theprivfew.github.io/twr-platform/',
+    summary: `<p>The professional network of architects, interior designers, builders, and furniture makers who collaborate with or refer to TWR.</p><p>Designers are treated as <strong>creative equals</strong> — they bring a brief and expect material collaboration, not just supply. The FCD certification pathway formalises their role as partners in the TWR provenance story.</p><p>Active example: <strong>Alex Symes Architecture</strong> — architect-client relationship, introduced through FCD project, potential to refer other architect clients. Makers and designers are tracked inside the Material Library contacts system with dedicated profile cards including engagement notes.</p>`,
+    next: ['FCD certification process to be formalised and documented', 'Material Library access for active collaborators — in pipeline', 'Active outreach to Sydney and coastal NSW architectural practices'],
+    connects: ['Material Library', 'Provenance Engine', 'Story Lab', 'Podcast', 'Footprint Commission'],
+    color: '#7aadc8'
+  },
+  {
+    id: 8,
+    label: 'Venue Concept',
+    status: 'concept',
+    statusLabel: 'Future Vision',
+    url: null,
+    summary: `<p>The mothership idea. An old shearing shed. Piled-up beams at the entrance. Inside: a five-star restaurant where every single piece of furniture is made from century-old reclaimed Australian hardwood. Modern. Contemporary. Full of story. Full of emotion.</p><p>This is where proof becomes visceral. Someone eats at a table, touches it, asks about it — and the answer changes how they think about timber forever. <strong>The venue is the brand in physical form.</strong></p><p>Chefs like Shannon Bennett are natural partners. The experience would generate content, provenance stories, and Footprint Commission opportunities simultaneously. Everything feeds everything else.</p>`,
+    next: ['A future idea — not near-term', 'Everything being built now (story, provenance, network) is infrastructure for this', 'The Footprint Commission high-profile relationships are the gateway to venue partnerships'],
+    connects: ['Story Lab', 'Workshop', 'Footprint Commission', 'Podcast', 'Maker & Designer Network'],
+    color: '#d4a44a'
+  },
+];
+
+const HUB = {
+  label: 'TWR Hub',
+  status: 'live',
+  statusLabel: 'Live — Entry Point',
+  url: 'https://theprivfew.github.io/twr-hub/',
+  summary: `<p>The central navigation point for the entire TWR digital ecosystem. A single URL that links to all six live systems.</p><p>This ecosystem diagram lives here. Everything radiates outward from this address.</p>`,
+  next: ['All six live systems linked from here', 'Ecosystem diagram at /ecosystem.html', 'Hub index to be expanded as new systems come online'],
+  connects: ['Material Library', 'Provenance Engine', 'Material Pipeline', 'Maker & Designer Network'],
+  color: '#C4530A'
+};
+
+// ── CANVAS DRAW ──────────────────────────────────────────────────────────────
+const canvas = document.getElementById('c');
+const W = 1200, H = 1200;
+canvas.width = W; canvas.height = H;
+const ctx = canvas.getContext('2d');
+const CX = W/2, CY = H/2;
+const FORGE='#C4530A', SAND='#C9B99A', OW='#FAF9F7', INK='#1A1410';
+
+const nodeAngles = [0,40,80,120,160,200,240,280,320];
+const nodeColors = NODES.map(n=>n.color);
+const SR=390, NR=92, CR=92;
+
+function deg(d){return d*Math.PI/180;}
+
+function drawDiagram(activeIdx) {
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle=INK; ctx.fillRect(0,0,W,H);
+
+  const bg=ctx.createRadialGradient(CX,CY,0,CX,CY,SR+NR+80);
+  bg.addColorStop(0,'rgba(196,83,10,0.07)'); bg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+
+  ctx.beginPath(); ctx.arc(CX,CY,SR,0,Math.PI*2);
+  ctx.strokeStyle='rgba(229,224,216,0.06)'; ctx.lineWidth=1; ctx.stroke();
+
+  ctx.fillStyle='rgba(201,185,154,0.28)'; ctx.font='400 11px Arial,sans-serif';
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  ctx.fillText('TWR ECOSYSTEM · APRIL 2026',CX,26);
+
+  NODES.forEach((n,i)=>{
+    const r=deg(nodeAngles[i]);
+    const nx=CX+Math.cos(r)*SR, ny=CY+Math.sin(r)*SR;
+    const sx=CX+Math.cos(r)*(CR+10), sy=CY+Math.sin(r)*(CR+10);
+    const ex=CX+Math.cos(r)*(SR-NR-10), ey=CY+Math.sin(r)*(SR-NR-10);
+
+    const isActive = activeIdx===i;
+    const opacity = activeIdx===null ? 1 : (isActive ? 1 : 0.4);
+
+    ctx.globalAlpha = opacity;
+
+    const sg=ctx.createLinearGradient(sx,sy,ex,ey);
+    sg.addColorStop(0,'rgba(196,83,10,0.55)'); sg.addColorStop(1,n.color+'70');
+    ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(ex,ey);
+    ctx.strokeStyle=sg; ctx.lineWidth=isActive?2.5:1.5;
+    if(n.status==='concept'||n.status==='motion') ctx.setLineDash([4,7]);
+    ctx.stroke(); ctx.setLineDash([]);
+
+    const ng=ctx.createRadialGradient(nx,ny,NR*0.3,nx,ny,NR*1.5);
+    ng.addColorStop(0,n.color+(isActive?'30':'1a')); ng.addColorStop(1,'transparent');
+    ctx.fillStyle=ng; ctx.beginPath(); ctx.arc(nx,ny,NR*1.5,0,Math.PI*2); ctx.fill();
+
+    ctx.beginPath(); ctx.arc(nx,ny,NR,0,Math.PI*2);
+    ctx.fillStyle='rgba(30,22,16,0.95)'; ctx.fill();
+
+    ctx.beginPath(); ctx.arc(nx,ny,NR,0,Math.PI*2);
+    ctx.strokeStyle=n.color; ctx.lineWidth=isActive?3:(n.status==='live'?2.2:1.4);
+    if(n.status==='concept') ctx.setLineDash([5,5]);
+    ctx.stroke(); ctx.setLineDash([]);
+
+    if(n.status==='live'){
+      ctx.beginPath(); ctx.arc(nx+NR*0.62,ny-NR*0.62,6,0,Math.PI*2);
+      ctx.fillStyle=n.color; ctx.fill();
+    }
+
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    const ll=n.label.split('\n'), sl=n.label.includes('\n')?['']:[];
+    const sub = n.id!==undefined ? NODES[i].label : '';
+
+    const labelLines=n.label.split('\n');
+    const subLabel=n.status==='live'?'↗ Live':n.status==='motion'?'In motion':n.status==='physical'?'Physical':n.status==='concept'?'Concept':'';
+    const allLines=[...labelLines, subLabel];
+    const LH=17, SLH=13, GAP=6;
+    const totalH=labelLines.length*LH+GAP+SLH;
+    let y=ny-totalH/2+LH/2;
+
+    labelLines.forEach(l=>{
+      ctx.font='400 14px Georgia,serif';
+      ctx.fillStyle= isActive ? OW : OW;
+      ctx.fillText(l,nx,y); y+=LH;
+    });
+    y+=GAP;
+    ctx.font='400 10px Arial,sans-serif';
+    ctx.fillStyle=isActive ? n.color : 'rgba(201,185,154,0.5)';
+    ctx.fillText(subLabel,nx,y);
+
+    ctx.globalAlpha=1;
+  });
+
+  // CENTRE
+  const cg=ctx.createRadialGradient(CX,CY,0,CX,CY,CR*2.2);
+  cg.addColorStop(0,'rgba(196,83,10,0.28)'); cg.addColorStop(0.5,'rgba(196,83,10,0.08)'); cg.addColorStop(1,'transparent');
+  ctx.fillStyle=cg; ctx.beginPath(); ctx.arc(CX,CY,CR*2.2,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(CX,CY,CR,0,Math.PI*2); ctx.fillStyle='#251b14'; ctx.fill();
+  ctx.beginPath(); ctx.arc(CX,CY,CR,0,Math.PI*2); ctx.strokeStyle=FORGE; ctx.lineWidth=2.5; ctx.stroke();
+  ctx.beginPath(); ctx.arc(CX,CY,CR-10,0,Math.PI*2); ctx.strokeStyle='rgba(196,83,10,0.22)'; ctx.lineWidth=1; ctx.stroke();
+
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.font='500 9px Arial,sans-serif'; ctx.fillStyle='rgba(201,185,154,0.45)'; ctx.fillText('THE',CX,CY-30);
+  ctx.font='300 24px Georgia,serif'; ctx.fillStyle=OW; ctx.fillText('WATTLE',CX,CY-8); ctx.fillText('ROAD',CX,CY+18);
+  ctx.font='400 9px Arial,sans-serif'; ctx.fillStyle=FORGE; ctx.fillText('· · ·',CX,CY+38);
+
+  // Legend
+  ctx.textAlign='left'; ctx.textBaseline='middle';
+  const lx=36, ly=H-48;
+  ctx.beginPath(); ctx.arc(lx,ly,5,0,Math.PI*2); ctx.fillStyle=FORGE; ctx.fill();
+  ctx.font='400 10px Arial,sans-serif'; ctx.fillStyle='rgba(201,185,154,0.4)'; ctx.fillText('Live — click to open',lx+14,ly);
+  ctx.beginPath(); ctx.setLineDash([4,4]); ctx.arc(lx+200,ly,10,0,Math.PI*2);
+  ctx.strokeStyle='rgba(201,185,154,0.25)'; ctx.lineWidth=1.2; ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillText('Concept / in development',lx+216,ly);
+  ctx.textAlign='right';
+  ctx.fillText('Click any node',W-36,ly);
+}
+
+drawDiagram(null);
+
+// ── PANEL LOGIC ───────────────────────────────────────────────────────────────
+let activeNode = null;
+
+function statusClass(s){
+  if(s==='live') return 'status-live';
+  if(s==='motion') return 'status-motion';
+  if(s==='physical') return 'status-physical';
+  return 'status-concept';
+}
+
+function openPanel(data, nodeIdx) {
+  activeNode = nodeIdx;
+
+  const stepsHtml = data.next.map(s=>`<li>${s}</li>`).join('');
+  const connsHtml = data.connects.map(c=>`<span class="conn-tag" onclick="openByName('${c}')">${c}</span>`).join('');
+  const linkBtn = data.url
+    ? `<a class="panel-link-btn" href="${data.url}" target="_blank">Open ${data.label} ↗</a>`
+    : '';
+  const urlLine = data.url
+    ? `<div class="panel-url">→ <a href="${data.url}" target="_blank">${data.url}</a></div>`
+    : `<div class="panel-url" style="color:rgba(201,185,154,0.3)">No live environment</div>`;
+
+  document.getElementById('panelContent').innerHTML = `
+    <span class="panel-status ${statusClass(data.status)}">${data.statusLabel}</span>
+    <div class="panel-title">${data.label}</div>
+    ${urlLine}
+    <div class="panel-section-label">Overview</div>
+    <div class="panel-body">${data.summary}</div>
+    <div class="panel-section-label">Next Steps</div>
+    <ul class="step-list">${stepsHtml}</ul>
+    <div class="panel-section-label">Connects To</div>
+    <div class="connections">${connsHtml}</div>
+    ${linkBtn}
+  `;
+
+  document.getElementById('panelSide').classList.add('open');
+  document.getElementById('diagramSide').classList.add('panel-open');
+
+  // Redraw with active node
+  if(nodeIdx !== null && nodeIdx !== 'hub') drawDiagram(nodeIdx);
+  else drawDiagram(null);
+
+  // Update hit area highlights
+  document.querySelectorAll('.node-hit').forEach(el => el.classList.remove('active'));
+  if(nodeIdx !== null && nodeIdx !== 'hub') {
+    const hit = document.getElementById('hit-'+nodeIdx);
+    if(hit) hit.classList.add('active');
+  }
+}
+
+function closePanel() {
+  activeNode = null;
+  document.getElementById('panelSide').classList.remove('open');
+  document.getElementById('diagramSide').classList.remove('panel-open');
+  document.querySelectorAll('.node-hit').forEach(el => el.classList.remove('active'));
+  drawDiagram(null);
+}
+
+function openByName(name) {
+  const idx = NODES.findIndex(n => n.label.replace('\n',' ').toLowerCase().includes(name.toLowerCase().split(' ')[0]));
+  if(idx >= 0) openPanel(NODES[idx], idx);
+}
+
+// Node click handlers
+NODES.forEach((n,i) => {
+  document.getElementById('hit-'+i).addEventListener('click', () => {
+    if(activeNode === i) { closePanel(); return; }
+    openPanel(n, i);
+  });
+});
+
+document.getElementById('hit-hub').addEventListener('click', () => {
+  if(activeNode === 'hub') { closePanel(); return; }
+  openPanel(HUB, 'hub');
+});
+
+document.getElementById('panelClose').addEventListener('click', closePanel);
+</script>
+</body>
+</html>
